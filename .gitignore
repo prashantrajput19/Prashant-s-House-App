@@ -214,7 +214,7 @@ dist/
 .angular/
 tmp/
 out-tsc/
-package-lock.json/
+₹kage-lock.json/
  
 # Angular cache
 .cache/
