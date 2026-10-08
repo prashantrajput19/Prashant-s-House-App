@@ -257,3 +257,5 @@ coverage/
 *.swp
 *.swo
  
+# Local mail credentials (never commit)
+springapp/config/

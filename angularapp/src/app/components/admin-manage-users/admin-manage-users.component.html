@@ -1,0 +1,88 @@
+<div class="page">
+    <div class="page-inner">
+        <div class="page-head">
+            <div>
+                <h2 class="page-title">Manage admins</h2>
+                <p class="subtitle">Only you, the master admin, can create admins or change who is one.</p>
+            </div>
+
+            <span class="count" *ngIf="users.length">{{ users.length }} users</span>
+        </div>
+
+        <div class="form-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="form-success" *ngIf="successMessage">{{ successMessage }}</div>
+
+        <h3 class="section-title">All users</h3>
+
+        <div class="loading-row" *ngIf="isLoading">
+            <span class="spinner"></span> Loading users...
+        </div>
+
+        <div class="panel" *ngIf="!isLoading && users.length">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Role</th>
+                        <th class="right">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let user of users">
+                        <td class="nowrap">
+                            <div class="named">
+                                <span class="avatar">{{ user.username.charAt(0) | uppercase }}</span>
+                                <span class="named-text">{{ user.username }}</span>
+                            </div>
+                        </td>
+                        <td class="nowrap cell-muted">{{ user.email }}</td>
+                        <td class="nowrap cell-muted">{{ user.mobileNumber }}</td>
+                        <td class="nowrap">
+                            <span class="role-pill" [class.master]="user.masterAdmin"
+                                [class.admin]="user.userRole === 'Admin'">{{ roleLabel(user) }}</span>
+                        </td>
+                        <td class="right nowrap">
+                            <div class="actions">
+                                <button class="btn-secondary" type="button" *ngIf="user.userRole !== 'Admin'"
+                                    (click)="makeAdmin(user)">Make admin</button>
+                                <button class="btn-danger" type="button" *ngIf="canRemove(user)"
+                                    (click)="askRemove(user)">Remove admin</button>
+                                <span class="cell-muted" *ngIf="user.masterAdmin">Protected</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal" *ngIf="userToRemove" role="dialog" aria-modal="true" aria-labelledby="removeTitle"
+    (keydown.escape)="cancelRemove()">
+    <div class="modal-card">
+        <div class="modal-icon error">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z" />
+                <path d="M9 12h6" />
+            </svg>
+        </div>
+
+        <h3 id="removeTitle">Remove admin access?</h3>
+
+        <p>
+            <strong>{{ userToRemove.username }}</strong> will lose admin access straight away and become a regular
+            user. You can make them an admin again later.
+        </p>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" type="button" [disabled]="isRemoving" (click)="cancelRemove()">Cancel</button>
+            <button class="btn-danger" type="button" [disabled]="isRemoving" (click)="confirmRemove()">
+                <span class="spinner" *ngIf="isRemoving"></span>
+                {{ isRemoving ? "Removing..." : "Remove admin" }}
+            </button>
+        </div>
+    </div>
+</div>

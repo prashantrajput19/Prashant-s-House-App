@@ -1,0 +1,124 @@
+<div class="page">
+    <div class="page-inner">
+        <div class="page-head">
+            <div>
+                <h2 class="page-title">Find an architect</h2>
+                <p class="subtitle">Browse by expertise, location and rating, then send an inquiry</p>
+            </div>
+
+            <span class="count" *ngIf="architects.length > 0">
+                {{ filteredArchitects.length }} of {{ architects.length }}
+                {{ architects.length === 1 ? "architect" : "architects" }}
+            </span>
+        </div>
+
+        <div class="form-error" *ngIf="errorMessage">
+            {{ errorMessage }}
+        </div>
+
+        <div class="loading-row" *ngIf="isLoading">
+            <span class="spinner"></span> Loading architects...
+        </div>
+
+        <div class="empty" *ngIf="!isLoading && architects.length === 0 && !errorMessage">
+            No architects found. Add new architect to see them
+        </div>
+
+        <div class="toolbar" *ngIf="architects.length > 0">
+            <div class="search">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M21 21l-4.3-4.3" />
+                </svg>
+
+                <input class="input" type="text" placeholder="Search by name or expertise" [value]="search"
+                    (input)="search = $any($event.target).value" />
+            </div>
+
+            <select class="select" [value]="expertiseFilter" (change)="expertiseFilter = $any($event.target).value">
+                <option value="">All expertise</option>
+                <option *ngFor="let expertise of expertiseOptions" [value]="expertise">{{ expertise }}</option>
+            </select>
+
+            <select class="select" [value]="locationFilter" (change)="locationFilter = $any($event.target).value">
+                <option value="">All locations</option>
+                <option *ngFor="let location of locationOptions" [value]="location">{{ location }}</option>
+            </select>
+
+            <button class="btn-secondary" type="button" *ngIf="hasFilters" (click)="clearFilters()">
+                Clear
+            </button>
+        </div>
+
+        <div class="no-results" *ngIf="architects.length > 0 && filteredArchitects.length === 0">
+            No architects match your search
+        </div>
+
+        <div class="cards" *ngIf="filteredArchitects.length > 0">
+            <article class="arch-card" *ngFor="let architect of filteredArchitects">
+                <header class="arch-head">
+                    <span class="avatar">{{ (architect.name || "").charAt(0) | uppercase }}</span>
+
+                    <div class="arch-ident">
+                        <h3>{{ architect.name }}</h3>
+                        <span class="arch-location">{{ architect.location }}</span>
+                    </div>
+
+                    <span class="status" [ngClass]="statusClass(architect.status)">
+                        {{ architect.status }}
+                    </span>
+                </header>
+
+                <dl class="arch-meta">
+                    <div>
+                        <dt>Expertise</dt>
+                        <dd><span class="tag">{{ architect.expertise }}</span></dd>
+                    </div>
+
+                    <div>
+                        <dt>Rating</dt>
+                        <dd>
+                            <span class="rating"><span class="star">&#9733;</span>{{ architect.rating }}</span>
+                        </dd>
+                    </div>
+                </dl>
+
+                <a class="portfolio" [routerLink]="['/portfolio', architect.architectId]">
+                    View portfolio
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M7 17L17 7M17 7H9M17 7v8" />
+                    </svg>
+                </a>
+
+                <footer class="arch-actions">
+                    <button class="btn" type="button" [disabled]="architect.status === 'Inactive'"
+                        (click)="sendInquiry(architect.architectId)">
+                        {{ architect.status === "Inactive" ? "Currently unavailable" : "Send Inquiry" }}
+                    </button>
+                </footer>
+            </article>
+        </div>
+    </div>
+</div>
+
+<div class="modal" *ngIf="alert.show" role="alertdialog" aria-modal="true" aria-labelledby="alertTitle" tabindex="0"
+    (keydown)="handleModalKeydown($event)">
+    <div class="modal-card">
+        <div class="modal-icon" [class.success]="alert.type === 'success'" [class.error]="alert.type === 'error'">
+            <svg *ngIf="alert.type === 'success'" class="icon" viewBox="0 0 24 24">
+                <path d="M20 6L9 17l-5-5" />
+            </svg>
+
+            <svg *ngIf="alert.type === 'error'" class="icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+            </svg>
+        </div>
+
+        <h3 id="alertTitle">{{ alert.title }}</h3>
+
+        <p>{{ alert.message }}</p>
+
+        <button class="btn btn-block" type="button" (click)="closeAlert()">OK</button>
+    </div>
+</div>

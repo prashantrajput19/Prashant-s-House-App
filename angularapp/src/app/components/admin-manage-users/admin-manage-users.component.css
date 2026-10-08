@@ -1,0 +1,33 @@
+.section-title {
+    margin: 28px 0 12px;
+    font-size: 18px;
+}
+
+.form-success {
+    margin-bottom: 12px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: var(--success);
+    background: var(--success-soft);
+    border-radius: 10px;
+}
+
+.role-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--input-border);
+    border-radius: 999px;
+}
+
+.role-pill.admin {
+    color: var(--blue);
+    background: var(--blue-soft);
+}
+
+.role-pill.master {
+    color: #1a1a1a;
+    background: var(--accent);
+}
